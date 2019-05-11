@@ -2,8 +2,14 @@ from __future__ import print_function, unicode_literals
 from PyInquirer import style_from_dict, Token, prompt, Separator
 from pprint import pprint
 import os
+from pyfiglet import Figlet
+import tempfile
+
+def prCyan(skk): print("\033[96m {}\033[00m" .format(skk)) 
+def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 
 def question():
+    print(Figlet(font='epic').renderText('RCTNGL'))
     style = style_from_dict({
         Token.Separator: '#0091ea',
         Token.QuestionMark: '#76ff03',
@@ -60,12 +66,22 @@ def question():
     if answers1.get('vars'):
         answers2 = prompt({'type':'confirm','name':'editorvariables','message':'Would you like to use a custom file to generate the variables?','default':True},style=style)
         if answers2.get('editorvariables'):
-            prompt({
+            path = prompt({
                 'type':'input',
                 'message':'Please enter the path to your variable file',
                 'name':'path'
             })
-            
-    else:
-        print("Creating project...")
+        else:
+            path = prompt({
+                'type':'editor',
+                'message':'Please create your JSON file in this editor.',
+                'name':'json'
+            })
+    try:
+        os.makedirs(answers1.get('name'))
+    except OSError:  
+        prRed ("Creation of the directory %s failed" % answers1.get('name'))
+    else:  
+        prCyan ("Successfully created the directory %s" % answers1.get('name'))
+
 question()
